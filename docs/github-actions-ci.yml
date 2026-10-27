@@ -1,0 +1,26 @@
+# CI for llm-observability-platform.
+# NOTE: ship as docs/github-actions-ci.yml, NOT .github/workflows/ci.yml —
+# the GitHub integration used for publishing rejects .github/workflows/
+# paths (missing Workflows permission). To activate, move this file to
+# .github/workflows/ci.yml in the repository after publishing.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q
+      - run: python -m llm_observability
